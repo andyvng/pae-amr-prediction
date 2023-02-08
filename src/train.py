@@ -22,7 +22,7 @@ from sklearn.metrics import accuracy_score, roc_auc_score, f1_score, confusion_m
 
 from utils import load_and_preprocess_spectra
 
-def objective(trial, X, y, model_name, antimicrobial, output_dir, n_samples):
+def objective(trial, X, y, model_name, antimicrobial, output_dir):
 
     class_weights = class_weight.compute_class_weight(
         class_weight='balanced',
@@ -42,7 +42,10 @@ def objective(trial, X, y, model_name, antimicrobial, output_dir, n_samples):
         params = {
             'n_estimators': trial.suggest_int('n_estimators', 100, 1000, 100),
             'max_depth': trial.suggest_int('max_depth', 1, 29, 2),
-            'class_weight': trial.suggest_categorical('class_weight', [None, 'balanced', 'balanced_subsample'])
+            'max_features': trial.suggest_int('max_features', 20, 800, 20),
+            'class_weight': trial.suggest_categorical('class_weight', [None, 'balanced', 'balanced_subsample']),
+            'criterion': trial.suggest_categorical('criterion', ['gini', 'entropy', 'log_loss']),
+            'bootstrap': trial.suggest_categorical('bootstrap', [True, False])
         }
         model = RandomForestClassifier(**params, random_state=222)
     elif model_name == 'SVM':
@@ -90,7 +93,7 @@ def objective(trial, X, y, model_name, antimicrobial, output_dir, n_samples):
                                  scoring='roc_auc',
                                  cv=strat_k_fold)
 
-    aucs_fp = os.path.join(output_dir, f"aucs_{antimicrobial}_{model_name}_{n_samples}.txt")
+    aucs_fp = os.path.join(output_dir, f"tuning_aucs_{antimicrobial}_{model_name}.txt")
 
     if os.path.exists(aucs_fp):
         aucs = np.loadtxt(aucs_fp)
@@ -106,7 +109,6 @@ def tune_model(X_train,
                y_train,                        
                model,
                antimicrobial,
-               n_samples,
                output_dir,
                n_trials=100,
                random_state=222):
@@ -119,13 +121,12 @@ def tune_model(X_train,
                                        y_train,
                                        model,
                                        antimicrobial,
-                                       output_dir,
-                                       n_samples)
+                                       output_dir)
         study.optimize(func, n_trials=n_trials)
         print(f"The best parameters are : {study.best_params}")
 
         # Saving best params
-        with open(os.path.join(output_dir, f"best_params_{antimicrobial}_{model}_{n_samples}.pkl"), 'wb') as best_params_outupt:
+        with open(os.path.join(output_dir, f"best_params_{antimicrobial}_{model}.pkl"), 'wb') as best_params_outupt:
             pickle.dump(study.best_params, best_params_outupt)
 
         if model == 'LR':
@@ -152,7 +153,7 @@ def tune_model(X_train,
     best_model.fit(X_train, y_train)
 
     # Saving best model
-    with open(os.path.join(output_dir, f"best_model_{antimicrobial}_{model}_{n_samples}.pkl"), 'wb') as best_model_output:
+    with open(os.path.join(output_dir, f"best_model_{antimicrobial}_{model}.pkl"), 'wb') as best_model_output:
         pickle.dump(best_model, best_model_output)
 
     return best_model

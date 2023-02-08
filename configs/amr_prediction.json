@@ -1,0 +1,11 @@
+{
+  "input_dir": "/home/hnguyen/vk56_scratch/tmp_folder/maldi_amr/Alfred/Alfred_paes",
+  "ast_label_path": "/home/hnguyen/vk56_scratch/tmp_folder/maldi_amr/Alfred/alfred_mic_090223.csv",
+  "train_id_path": "/home/hnguyen/vk56_scratch/tmp_folder/maldi_amr/Alfred/codes/alfred_train_ids.txt",
+  "test_id_path": "/home/hnguyen/vk56_scratch/tmp_folder/maldi_amr/Alfred/codes/alfred_test_ids.txt",
+  "smote_id_path": "",
+  "clustering_path": "",
+  "bins_path": "/home/hnguyen/vk56_scratch/tmp_folder/maldi_amr/Alfred/dynamic_binning_100_mass_features.pkl",
+  "max_intensity": 0,
+  "output_dir": "results/prediction/dyn_100"
+}
