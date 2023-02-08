@@ -58,7 +58,7 @@ def main():
         raise ValueError(f"Model not found! - {config['model']}")
 
     optimizer = optim.Adam(model.parameters(), lr=config['learning_rate'])
-    stopper = EarlyStopper(config['patient'], config['delta'])
+    stopper = EarlyStopper(config['patience'], config['delta'])
 
     train_losses = []
     val_losses = []

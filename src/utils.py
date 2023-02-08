@@ -2,6 +2,8 @@ import os
 import numpy as np
 import pandas as pd
 import torch
+import scipy.signal
+import scipy.stats
 
 from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
@@ -59,3 +61,41 @@ class EarlyStopper:
             if self.counter >= self.patience:
                 return True
         return False
+
+
+def load_and_preprocess_spectra(input_dir,
+                                ast_df,
+                                antimicrobial,
+                                ids,
+                                bins, 
+                                statistic='max'):
+    '''
+    Loading spectra from directory and preprocess spectra
+    '''
+
+    X = None
+    y = None
+    
+    for id in ids:
+        masses = [ (2000 + i) for i in range(18000) ]
+        intensities = np.loadtxt(os.path.join(input_dir, f"{id}.txt")).reshape(1, -1)
+
+        # Bin intensities and return bin means
+        binned_intensities = scipy.stats.binned_statistic(masses,
+                                                          intensities,
+                                                          statistic=statistic,
+                                                          bins=bins).statistic
+        np.nan_to_num(binned_intensities, copy=False, nan=0)
+
+        if X is not None:
+            X = np.concatenate([X, binned_intensities], axis=0)
+        else:
+            X = binned_intensities
+
+    # getting Y label
+    tmp_df = pd.DataFrame({'id': ids})
+    y = tmp_df.merge(ast_df, how='left', on='id')[antimicrobial].values
+
+    nan_mask = np.isnan(y)
+
+    return X[~nan_mask], y[~nan_mask]

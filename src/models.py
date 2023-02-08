@@ -1,9 +1,12 @@
 import os
 import numpy as np
 import pandas as pd
+import scipy.signal
+import scipy.stats
 
 import torch
 from torch import nn
+
 
 class VanillaAutoEncoder(nn.Module):
     def __init__(self, input_shape):
@@ -95,4 +98,3 @@ class VariationalAutoEncoder(nn.Module):
         mu, logvar, X = self.encoder(X)
         X = self.decoder(X)
         return X, mu, logvar
-    
