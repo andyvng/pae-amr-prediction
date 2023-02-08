@@ -148,8 +148,8 @@ def main():
                                f"result_{antimicrobial}_{model}.txt")
 
     with open(result_path, 'w') as result_output:
-        result_output.write(f"bacc\acc\tauroc\tf1\tprecision\trecall\tll\ttn\tfn\ttp\tfp\tthreshold\n")
-        result_output.write(f"{bacc}\t{acc}\t{auc}\t{f1}\{precision}\t{recall}\t{ll}\t{tn}\t{fn}\t{tp}\t{fp}\t{optimal_threshold}")
+        result_output.write(f"bacc\tacc\tauroc\tf1\tprecision\trecall\tll\ttn\tfn\ttp\tfp\tthreshold\n")
+        result_output.write(f"{bacc}\t{acc}\t{auc}\t{f1}\t{precision}\t{recall}\t{ll}\t{tn}\t{fn}\t{tp}\t{fp}\t{optimal_threshold}")
 
     result_df = pd.DataFrame()
     result_df['y_test'] = y_test
