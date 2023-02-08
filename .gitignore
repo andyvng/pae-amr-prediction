@@ -130,6 +130,3 @@ dmypy.json
 
 # Experiment folder
 experiments/
-
-# Config folder
-configs/
