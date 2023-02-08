@@ -1,0 +1,17 @@
+{
+  "working_dir": "${HOME}/vk56_scratch/tmp_folder/maldi_autoencoder/DRIAMS/ESKAPES",
+  "train_path": "${HOME}/vk56_scratch/tmp_folder/maldi_autoencoder/DRIAMS/codes/train_ids.txt",
+  "val_path": "${HOME}/vk56_scratch/tmp_folder/maldi_autoencoder/DRIAMS/codes/val_ids.txt",
+  "test_path": "${HOME}/vk56_scratch/tmp_folder/maldi_autoencoder/DRIAMS/codes/test_ids.txt",
+  "model": "variational",
+  "latent_shape": 8,
+  "batch_size": 256,
+  "num_epochs": 1000,
+  "learning_rate": 0.001,
+  "balanced": 0,
+  "max_intensity": 0.009055,
+  "output_dir": "testing_out",
+  "suffix": "whole",
+  "patience": 10,
+  "delta": 50
+}
