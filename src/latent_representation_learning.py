@@ -106,7 +106,7 @@ def main():
             break
 
         if epoch % 20 == 0:
-            torch.save(model, os.path.join(config["output_dir"], f"{config['suffix']}_{config['model']}_epoch_{epoch}.pt"))
+            torch.save(model.state_dict(), os.path.join(config["output_dir"], f"{config['suffix']}_{config['model']}_epoch_{epoch}.pt"))
             plt.clf()
             fig = plt.figure(figsize=(12, 5), dpi=100)
             ax = fig.add_subplot(1, 1, 1)
@@ -118,7 +118,7 @@ def main():
             ax.legend()
             plt.savefig(os.path.join(config["output_dir"], f"{config['suffix']}_{config['model']}_epoch_{epoch}.jpg"), dpi=150)
 
-    torch.save(model, os.path.join(config["output_dir"], f"{config['suffix']}_{config['model']}.pt"))
+    torch.save(model.state_dict(), os.path.join(config["output_dir"], f"{config['suffix']}_{config['model']}.pt"))
 
     plt.clf()
     fig = plt.figure(figsize=(12, 5), dpi=100)
