@@ -78,13 +78,17 @@ def main():
         X = pd.read_csv(config['input_dir'])
         X_train = X.merge(pd.DataFrame({'id': train_ids}),
                           how='inner',
-                          on='id').drop(labels=['id']).to_numpy()
+                          on='id')\
+                   .drop(labels=['id'], axis=1)\
+                   .to_numpy()
         y_train = ast_df.merge(pd.DataFrame({'id': train_ids}),
                                how='inner',
                                on='id')[antimicrobial].values
         X_test = X.merge(pd.DataFrame({'id': train_ids}),
                           how='inner',
-                          on='id').drop(labels=['id']).to_numpy()
+                          on='id')\
+                   .drop(labels=['id'], axis=1)\
+                   .to_numpy()
         y_test = ast_df.merge(pd.DataFrame({'id': train_ids}),
                                how='inner',
                                on='id')[antimicrobial].values
