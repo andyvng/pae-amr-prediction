@@ -76,6 +76,9 @@ def main():
                                                     bins) 
     else:
         X = pd.read_csv(config['input_dir'])
+        features=list(X.columns)
+        features.remove('id')
+        
         X_train = X.merge(pd.DataFrame({'id': train_ids}),
                           how='inner',
                           on='id')\
