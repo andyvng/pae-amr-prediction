@@ -82,7 +82,7 @@ def main():
 
     # Adding cluster information
     if config['extra_features_path']:
-        extra_feature_df = pd.read_csv(config['extra_features_path']) # Don't forget one-hot encoding!
+        extra_feature_df = pd.read_csv(config['extra_features_path']) # Don't forget one-hot encoding and scaling!
         train_extra_feature_df = extra_feature_df.merge(pd.DataFrame({'id': train_ids}), on='id', how='inner').drop(labels=['id'], axis=1).to_numpy()
         test_extra_feature_df = extra_feature_df.merge(pd.DataFrame({'id': test_ids}), on='id', how='inner').drop(labels=['id'], axis=1).to_numpy()
 
