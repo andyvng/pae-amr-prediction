@@ -84,12 +84,12 @@ def main():
         y_train = ast_df.merge(pd.DataFrame({'id': train_ids}),
                                how='inner',
                                on='id')[antimicrobial].values
-        X_test = X.merge(pd.DataFrame({'id': train_ids}),
+        X_test = X.merge(pd.DataFrame({'id': test_ids}),
                           how='inner',
                           on='id')\
                    .drop(labels=['id'], axis=1)\
                    .to_numpy()
-        y_test = ast_df.merge(pd.DataFrame({'id': train_ids}),
+        y_test = ast_df.merge(pd.DataFrame({'id': test_ids}),
                                how='inner',
                                on='id')[antimicrobial].values
 
