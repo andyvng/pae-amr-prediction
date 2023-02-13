@@ -41,19 +41,6 @@ def main():
     with open(args.config, 'r') as config_input:
         config = json.load(config_input)
 
-    # Load bins
-    with open(config["bins_path"], 'rb') as bins_input:
-        features = pickle.load(bins_input)
-
-    if type(features) == np.ndarray:
-        pass
-    else:
-        features = features.values
-        
-    bins = features.astype('int')
-    bins = np.append(bins, [20000]) # Adding the righmost edge
-
-
     # Loading ids
     train_ids = pd.read_csv(config["train_id_path"], header=None)\
                   .values.flatten()
@@ -63,17 +50,44 @@ def main():
     # Loading AST label
     ast_df = pd.read_csv(config["ast_label_path"])
 
-    # Load training and testing dataset
-    X_train, y_train = load_and_preprocess_spectra(config["input_dir"],
-                                                   ast_df,
-                                                   antimicrobial,
-                                                   train_ids, 
-                                                   bins)
-    X_test, y_test = load_and_preprocess_spectra(config["input_dir"],
-                                                 ast_df,
-                                                 antimicrobial,
-                                                 test_ids,
-                                                 bins) 
+    if config["bins_path"]:
+        # Load bins
+        with open(config["bins_path"], 'rb') as bins_input:
+            features = pickle.load(bins_input)
+
+        if type(features) == np.ndarray:
+            pass
+        else:
+            features = features.values
+            
+        bins = features.astype('int')
+        bins = np.append(bins, [20000]) # Adding the righmost edge
+
+        # Load training and testing dataset
+        X_train, y_train = load_and_preprocess_spectra(config["input_dir"],
+                                                    ast_df,
+                                                    antimicrobial,
+                                                    train_ids, 
+                                                    bins)
+        X_test, y_test = load_and_preprocess_spectra(config["input_dir"],
+                                                    ast_df,
+                                                    antimicrobial,
+                                                    test_ids,
+                                                    bins) 
+    else:
+        X = pd.read_csv(config['input_dir'])
+        X_train = X.merge(pd.DataFrame({'id': train_ids}),
+                          how='inner',
+                          on='id').drop(labels=['id']).to_numpy()
+        y_train = ast_df.merge(pd.DataFrame({'id': train_ids}),
+                               how='inner',
+                               on='id')[antimicrobial].values
+        X_test = X.merge(pd.DataFrame({'id': train_ids}),
+                          how='inner',
+                          on='id').drop(labels=['id']).to_numpy()
+        y_test = ast_df.merge(pd.DataFrame({'id': train_ids}),
+                               how='inner',
+                               on='id')[antimicrobial].values
 
     # Normalization
     norm_coeff = max(np.max(X_train), np.max(X_test))
