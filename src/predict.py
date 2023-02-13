@@ -156,27 +156,28 @@ def main():
     result_df['y_pred'] = y_pred
     result_df.to_csv(os.path.join(config["output_dir"], f"result_{antimicrobial}_{model}.csv"), index=False)
 
-    # Get salient feature from SHAP
-    if model in ["RF", "XGB"]:
-        explainer = shap.TreeExplainer(clf)
-    elif model in ["LR", "SVM", "MLP"]:
-        explainer = shap.KernelExplainer(clf.predict_proba, X_train)
-    shap_values = np.array(explainer.shap_values(X_test))
-    if len(shap_values.shape) == 3:
-        feature_shap_values = np.abs(shap_values)[1, :, :].mean(0)
-    elif len(shap_values.shape) == 2:
-        feature_shap_values = np.abs(shap_values).mean(0)
+    if config["run_shap"]: #Make SHAP run optional
+        # Get salient feature from SHAP
+        if model in ["RF", "XGB"]:
+            explainer = shap.TreeExplainer(clf)
+        elif model in ["LR", "SVM", "MLP"]:
+            explainer = shap.KernelExplainer(clf.predict_proba, X_train)
+        shap_values = np.array(explainer.shap_values(X_test))
+        if len(shap_values.shape) == 3:
+            feature_shap_values = np.abs(shap_values)[1, :, :].mean(0)
+        elif len(shap_values.shape) == 2:
+            feature_shap_values = np.abs(shap_values).mean(0)
 
-    salient_feature_df = pd.DataFrame({
-        "feature": features,
-        "SHAP_values": feature_shap_values
-    })
+        salient_feature_df = pd.DataFrame({
+            "feature": features,
+            "SHAP_values": feature_shap_values
+        })
 
-    salient_feature_df.sort_values(by=['SHAP_values'], 
-                                    ascending=False,
-                                    inplace=True)
-    salient_feature_df.reset_index(drop=True, inplace=True)
-    salient_feature_df.to_csv(os.path.join(config["output_dir"], f"SHAP_{antimicrobial}_{model}.csv"), index=False)
+        salient_feature_df.sort_values(by=['SHAP_values'], 
+                                        ascending=False,
+                                        inplace=True)
+        salient_feature_df.reset_index(drop=True, inplace=True)
+        salient_feature_df.to_csv(os.path.join(config["output_dir"], f"SHAP_{antimicrobial}_{model}.csv"), index=False)
 
 
 if __name__ == "__main__":

@@ -7,5 +7,6 @@
   "extra_features_path": "",
   "bins_path": "/home/hnguyen/vk56_scratch/tmp_folder/maldi_amr/Alfred/dynamic_binning_100_mass_features.pkl",
   "max_intensity": 0,
+  "run_shap": 0,
   "output_dir": "results/prediction/dyn_100"
 }
