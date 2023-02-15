@@ -1,12 +1,12 @@
 antimicrobial,model,bacc,acc,auroc,f1,precision,recall,ll,tn,fn,tp,fp,threshold,binning
 Amikacin,XGBoost,0.79,0.79,0.83,0.79,0.78,0.82,0.55,29,7,31,9,0.5086988370101834,Dynamic binning
 Aztreonam,Support Vector Machine,0.69,0.72,0.69,0.59,0.75,0.48,0.63,40,16,15,5,0.4895245309486229,Dynamic binning
-Ceftazidime,Random Forest,0.53,0.62,0.59,0.76,0.61,1.0,0.67,2,0,45,29,0.3584084084084084,Dynamic binning
+Ceftazidime,Multilayer Perceptron,0.57,0.62,0.63,0.72,0.64,0.82,0.67,10,8,37,21,0.4031066561259576,Dynamic binning
 Ceftazidime/avibactam,Support Vector Machine,0.72,0.83,0.78,0.61,0.83,0.48,0.47,53,11,10,2,0.4445086790424711,Dynamic binning
 Ceftolozane/tazobactam,XGBoost,0.75,0.84,0.75,0.65,0.79,0.55,0.59,53,9,11,3,0.5224436032334091,Dynamic binning
-Ciprofloxacin,XGBoost,0.76,0.83,0.83,0.88,0.86,0.91,0.46,13,5,50,8,0.6849942026031506,Dynamic binning
-Colistin,Support Vector Machine,0.5,0.84,0.62,0.0,0.0,0.0,0.46,64,12,0,0,0.1322018797747692,Dynamic binning
+Ciprofloxacin,Multilayer Perceptron,0.74,0.84,0.83,0.9,0.84,0.96,0.48,11,2,53,10,0.5511713295593654,Dynamic binning
+Colistin,Multilayer Perceptron,0.5,0.84,0.65,0.0,0.0,0.0,0.49,64,12,0,0,0.2325590226952695,Dynamic binning
 Imipenem,Support Vector Machine,0.74,0.78,0.8,0.83,0.75,0.93,0.58,17,3,42,14,0.5236141864799572,Dynamic binning
-Meropenem,Support Vector Machine,0.72,0.78,0.76,0.62,0.82,0.5,0.55,45,14,14,3,0.5165250085174881,Dynamic binning
+Meropenem,Multilayer Perceptron,0.77,0.79,0.79,0.71,0.71,0.71,0.55,40,8,20,8,0.2697391065019167,Dynamic binning
 Piperacillin/tazobactam,Support Vector Machine,0.66,0.67,0.67,0.72,0.68,0.76,0.66,19,10,32,15,0.4148647251060484,Dynamic binning
 Tobramycin,Support Vector Machine,0.83,0.83,0.91,0.84,0.78,0.92,0.42,28,3,35,10,0.3172732806024299,Dynamic binning
