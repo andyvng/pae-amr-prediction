@@ -70,6 +70,7 @@ def objective(trial, X, y, model_name, antimicrobial, output_dir):
         params = {
             "solver": trial.suggest_categorical("solver", ["sgd", "adam"]),
             "momentum": trial.suggest_float("momentum", 0.0, 1.0),
+            'max_iter': trial.suggest_int('max_iter', 200, 1000, 100),
             "learning_rate_init": trial.suggest_float("learning_rate_init", 1e-5, 1e-3, log=True),
             "activation": trial.suggest_categorical("activation", ["tanh", "relu"]),
             "power_t": trial.suggest_float("power_t", 0.2, 0.8, step=0.1)

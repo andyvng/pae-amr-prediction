@@ -104,11 +104,17 @@ def main():
     # Adding cluster information
     if config['extra_features_path']:
         extra_feature_df = pd.read_csv(config['extra_features_path']) # Don't forget one-hot encoding and scaling!
+        
+        extra_features = list(extra_feature_df.columns)
+        extra_features.remove('id')
+        features.extend(extra_features)
+
         train_extra_feature_df = extra_feature_df.merge(pd.DataFrame({'id': train_ids}), on='id', how='inner').drop(labels=['id'], axis=1).to_numpy()
         test_extra_feature_df = extra_feature_df.merge(pd.DataFrame({'id': test_ids}), on='id', how='inner').drop(labels=['id'], axis=1).to_numpy()
 
         X_train = np.concatenate([X_train, train_extra_feature_df], axis=1)
         X_test  = np.concatenate([X_test, test_extra_feature_df], axis=1)
+        
     
     # Oversampling with SMOTE
     if config["smote_id_path"]:
