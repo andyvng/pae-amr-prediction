@@ -107,7 +107,7 @@ def main():
         
         extra_features = list(extra_feature_df.columns)
         extra_features.remove('id')
-        features.extend(extra_features)
+        features = np.concatenate(features, extra_features)
 
         train_extra_feature_df = extra_feature_df.merge(pd.DataFrame({'id': train_ids}), on='id', how='inner').drop(labels=['id'], axis=1).to_numpy()
         test_extra_feature_df = extra_feature_df.merge(pd.DataFrame({'id': test_ids}), on='id', how='inner').drop(labels=['id'], axis=1).to_numpy()
