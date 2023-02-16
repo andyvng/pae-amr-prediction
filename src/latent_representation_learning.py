@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import json
+import pickle
 
 import torch
 from torch import nn, optim
@@ -68,6 +69,19 @@ def main():
     train_losses = []
     val_losses = []
 
+    if config["model"] == "variational":
+        train_losses_per_type = {
+            "reconstruction": [],
+            "kl": [],
+            "classification": []
+        }
+
+        val_losses_per_type = {
+            "reconstruction": [],
+            "kl": [],
+            "classification": []
+        }
+
     for epoch in range(config["num_epochs"]):
         train_losses.append(0)
         for batch_idx, (x, y) in enumerate(train_dataloader):
@@ -82,6 +96,12 @@ def main():
                 #Update loss for multilabel classification
                 classification_loss = F.binary_cross_entropy(y_hat, y.float(), reduction='sum').to(device)
                 loss = reconstruction_loss + kl_loss + classification_loss
+
+                train_losses_per_type['reconstruction'] = reconstruction_loss
+                train_losses_per_type['kl'] = kl_loss
+                train_losses_per_type['classification'] = classification_loss
+
+
             
             optimizer.zero_grad()
             loss.backward()
@@ -103,11 +123,15 @@ def main():
                     kl_loss = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
                     classification_loss = F.binary_cross_entropy(y_hat, y.float(), reduction='sum').to(device)
                     loss = reconstruction_loss + kl_loss + classification_loss
+                    val_losses_per_type['reconstruction'] = reconstruction_loss
+                    val_losses_per_type['kl'] = kl_loss
+                    val_losses_per_type['classification'] = classification_loss
+
                 val_losses[epoch] += loss.item()
             val_losses[epoch] /= len(val_dataloader.dataset)
 
         if epoch % 10 == 0:
-            print(f'Epoch: {str(epoch).zfill(4)} - Cross-Entropy loss: Train {train_losses[epoch]} - Val {val_losses[epoch]}')
+            print(f'Epoch: {str(epoch).zfill(4)} - Loss: Train {train_losses[epoch]} - Val {val_losses[epoch]}')
 
         if stopper.early_stop(val_losses[epoch]):
             print(f"Stopping criteria reached! Stop at epoch {epoch}")
@@ -125,6 +149,12 @@ def main():
             ax.tick_params(axis='both', which='major', labelsize=15)
             ax.legend()
             plt.savefig(os.path.join(config["output_dir"], f"{config['suffix']}_{config['model']}_epoch_{epoch}.jpg"), dpi=150)
+            # Save loss for further analysis
+            if config["model"] == "variational":
+                train_losses_per_type_df = pd.DataFrame(train_losses_per_type)
+                train_losses_per_type_df.to_csv(os.path.join(config["output_dir"], f"training_loss_{config['suffix']}_{config['model']}_epoch_{epoch}.csv"), index=False)
+                val_losses_per_type_df = pd.DataFrame(val_losses_per_type)
+                val_losses_per_type_df.to_csv(os.path.join(config["output_dir"], f"validation_loss_{config['suffix']}_{config['model']}_epoch_{epoch}.csv"), index=False)
 
     torch.save(model.state_dict(), os.path.join(config["output_dir"], f"{config['suffix']}_{config['model']}.pt"))
 
