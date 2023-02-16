@@ -28,10 +28,20 @@ class DatasetFromDir(Dataset):
     '''
     Loading dataset from working directory and lable files
     '''
-    def __init__(self, working_dir, ids_path, max_intensity=0.009055):
+    def __init__(self, 
+                 working_dir, 
+                 ast_label_path, 
+                 ids_path, 
+                 max_intensity=0.009055,
+                 antimicrobials=["piperacillin_tazobactam" ,
+                                 "meropenem",
+                                 "ciprofloxacin",
+                                 "tobramycin"]):
         self.working_dir = working_dir
+        self.ast_label_path = ast_label_path
         self.ids = pd.read_csv(ids_path, header=None).values
         self.max_intensity = max_intensity
+        self.antimicrobials = antimicrobials
 
     def __len__(self):
         return len(self.ids)
@@ -39,7 +49,9 @@ class DatasetFromDir(Dataset):
     def __getitem__(self, idx):
         self.code = self.ids.item(idx)
         self.spectra = np.loadtxt(os.path.join(self.working_dir, f"{self.code}.txt")) / self.max_intensity
-        return torch.tensor(self.spectra)
+        ast_label_df = pd.read_csv(self.ast_label_path, header=0)
+        self.labels = ast_label_df.copy().loc[ast_label_df['id']==self.code, self.antimicrobials].to_numpy().squeeze()
+        return torch.tensor(self.spectra), torch.tensor(self.antimicrobials)
 
 class EarlyStopper:
     """
