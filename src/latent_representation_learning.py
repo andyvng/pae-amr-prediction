@@ -27,10 +27,13 @@ def main():
 
 
     train_dataset = DatasetFromDir(config['working_dir'],
+                                   config['ast_path'],
                                    config['train_path'])
     val_dataset = DatasetFromDir(config['working_dir'],
+                                 config['ast_path'],
                                  config['val_path'])
     test_dataset = DatasetFromDir(config['working_dir'],
+                                  config['ast_path'],
                                   config['test_path'])
 
     print(f"Train:{len(train_dataset)}\tVal:{len(val_dataset)}\tTest:{len(test_dataset)}")
@@ -65,16 +68,18 @@ def main():
 
     for epoch in range(config["num_epochs"]):
         train_losses.append(0)
-        for batch_idx, x in enumerate(train_dataloader):
+        for batch_idx, (x, y) in enumerate(train_dataloader):
             x = x.to(device)
             if config["model"] == "vanilla":
                 x_hat = model(x.float())
                 loss = F.binary_cross_entropy(x_hat, x.float(), reduction='sum').to(device)
             elif config["model"] == "variational":
-                x_hat, mu, logvar = model(x.float())
+                x_hat, mu, logvar, y_hat = model(x.float())
                 reconstruction_loss = F.binary_cross_entropy(x_hat, x.float(), reduction='sum').to(device)
                 kl_loss = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
-                loss = reconstruction_loss + kl_loss           
+                #Update loss for multilabel classification
+                classification_loss = F.binary_cross_entropy(y_hat, y.float(), reduction='sum').to(device)
+                loss = reconstruction_loss + kl_loss + classification_loss
             
             optimizer.zero_grad()
             loss.backward()
@@ -85,16 +90,17 @@ def main():
         val_losses.append(0)
 
         with torch.no_grad():
-            for batch_idx, x in enumerate(val_dataloader):
+            for batch_idx, (x, y) in enumerate(val_dataloader):
                 x = x.to(device)
                 if config["model"] == "vanilla":
                     x_hat = model(x.float())
                     loss = F.binary_cross_entropy(x_hat, x.float(), reduction='sum').to(device)
                 elif config["model"] == "variational":
-                    x_hat, mu, logvar = model(x.float())
+                    x_hat, mu, logvar, y_hat = model(x.float())
                     reconstruction_loss = F.binary_cross_entropy(x_hat, x.float(), reduction='sum').to(device)
                     kl_loss = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
-                    loss = reconstruction_loss + kl_loss
+                    classification_loss = F.binary_cross_entropy(y_hat, y.float(), reduction='sum').to(device)
+                    loss = reconstruction_loss + kl_loss + classification_loss
                 val_losses[epoch] += loss.item()
             val_losses[epoch] /= len(val_dataloader.dataset)
 

@@ -84,17 +84,42 @@ class VariationalDecoder(nn.Module):
         X = self.sigmoid(self.fc4(X))
         return X
 
+class MultilabelClassifier(nn.Module):
+    def __init__(self, input_shape, hidden_layers, output_shape):
+        super(MultilabelClassifier, self).__init__()
+        self.input_shape = input_shape
+        self.output_shape = output_shape
+        self.hidden_layers = hidden_layers
+        self.relu = nn.ReLU()
+        self.sigmoid = nn.Sigmoid()
+
+    def forward(self, X):
+        for idx, layer_shape in enumerate(self.hidden_layers):
+            if idx == 0:
+                X = self.relu(nn.Linear(self.input_shape, layer_shape)(X))
+            else:
+                X = self.relu(nn.Linear(self.hidden_layers[idx-1], layer_shape)(X))
+        X = self.sigmoid(nn.Linear(self.hidden_layers[-1], self.output_shape)(X))
+        return X
+
 class VariationalAutoEncoder(nn.Module):
-    def __init__(self, input_shape, latent_shape):
+    def __init__(self, input_shape, latent_shape, hidden_layers, output_shape):
         super(VariationalAutoEncoder, self).__init__()
         self.input_shape = input_shape
         self.latent_shape = latent_shape
+        self.hidden_layers = hidden_layers
+        self.output_shape = output_shape
         # Encoding part
         self.encoder = VariationalEncoder(self.input_shape, self.latent_shape)
         # Decoding part
         self.decoder = VariationalDecoder(self.input_shape, self.latent_shape)
+        # Multilabel classification part (Take latent shape as input)
+        self.multilabel_classifier = MultilabelClassifier(self.latent_shape,
+                                                          self.hidden_layers,
+                                                          self.output_shape)
    
     def forward(self, X):
         mu, logvar, X = self.encoder(X)
+        Y = self.multilabel_classifier(X)
         X = self.decoder(X)
-        return X, mu, logvar
+        return X, mu, logvar, Y
