@@ -51,7 +51,7 @@ class DatasetFromDir(Dataset):
         self.spectra = np.loadtxt(os.path.join(self.working_dir, f"{self.code}.txt")) / self.max_intensity
         ast_label_df = pd.read_csv(self.ast_label_path, header=0)
         self.labels = ast_label_df.copy().loc[ast_label_df['id']==self.code, self.antimicrobials].to_numpy().squeeze()
-        return torch.tensor(self.spectra), torch.tensor(self.antimicrobials)
+        return torch.tensor(self.spectra), torch.tensor(self.labels)
 
 class EarlyStopper:
     """
