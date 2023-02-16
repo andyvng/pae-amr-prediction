@@ -97,11 +97,9 @@ def main():
                 classification_loss = F.binary_cross_entropy(y_hat, y.float(), reduction='sum').to(device)
                 loss = reconstruction_loss + kl_loss + classification_loss
 
-                train_losses_per_type['reconstruction'].append(reconstruction_loss)
-                train_losses_per_type['kl'].append(kl_loss)
-                train_losses_per_type['classification'].append(classification_loss)
-
-
+                train_losses_per_type['reconstruction'].append(reconstruction_loss.item())
+                train_losses_per_type['kl'].append(kl_loss.item())
+                train_losses_per_type['classification'].append(classification_loss.item())
             
             optimizer.zero_grad()
             loss.backward()
@@ -123,9 +121,9 @@ def main():
                     kl_loss = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
                     classification_loss = F.binary_cross_entropy(y_hat, y.float(), reduction='sum').to(device)
                     loss = reconstruction_loss + kl_loss + classification_loss
-                    val_losses_per_type['reconstruction'].append(reconstruction_loss)
-                    val_losses_per_type['kl'].append(kl_loss)
-                    val_losses_per_type['classification'].append(classification_loss)
+                    val_losses_per_type['reconstruction'].append(reconstruction_loss.item())
+                    val_losses_per_type['kl'].append(kl_loss.item())
+                    val_losses_per_type['classification'].append(classification_loss.item())
 
                 val_losses[epoch] += loss.item()
             val_losses[epoch] /= len(val_dataloader.dataset)
