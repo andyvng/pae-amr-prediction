@@ -52,11 +52,13 @@ def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     if config['model'] == 'vanila':
-        model = VanillaAutoEncoder(train_dataset.__getitem__(0).shape[0]) \
+        model = VanillaAutoEncoder(train_dataset.__getitem__(0)[0].shape[0]) \
                                .to(device)
     elif config['model'] == 'variational':
-        model = VariationalAutoEncoder(train_dataset.__getitem__(0).shape[0],
-                                       config['latent_shape']).to(device) 
+        model = VariationalAutoEncoder(train_dataset.__getitem__(0)[0].shape[0],
+                                       config['latent_shape'],
+                                       config['hidden_layers'], 
+                                       config['output_shape']).to(device) 
     else:
         raise ValueError(f"Model not found! - {config['model']}")
 
