@@ -105,9 +105,9 @@ def load_and_preprocess_spectra(input_dir,
         np.nan_to_num(binned_intensities, copy=False, nan=0)
 
         if X is not None:
-            X = np.concatenate([X, binned_intensities], axis=0)
+            X = np.concatenate([X, binned_intensities.reshape(1, -1)], axis=0)
         else:
-            X = binned_intensities
+            X = binned_intensities.reshape(1, -1)
 
     # getting Y label
     tmp_df = pd.DataFrame({'id': ids})
