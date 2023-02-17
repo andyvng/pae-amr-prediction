@@ -130,3 +130,6 @@ dmypy.json
 
 # Experiment folder
 experiments/
+
+# Inhouse data preprocess
+src/preprocess/gather_inhouse_data.ipynb
