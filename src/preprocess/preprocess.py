@@ -35,6 +35,10 @@ def main():
     parser.add_argument("output_dir",
                         type=str,
                         help="Directory to save preprocessed file")
+    parser.add_argument("--delimiter",
+                        type=str,
+                        help="Delimiter used to seperate mass and intensity values",
+                        default=",")
 
     args = parser.parse_args()
 
@@ -44,7 +48,7 @@ def main():
         tmp_df = pd.read_csv(spectra_file, 
                              header=None, 
                              names=['mass', 'intensity'],
-                             delimiter="\t")
+                             delimiter=args.delimiter)
 
         masses = tmp_df['mass'].to_numpy()
         intensities = tmp_df['intensity'].to_numpy()
