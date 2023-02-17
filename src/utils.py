@@ -89,8 +89,13 @@ def load_and_preprocess_spectra(input_dir,
     y = None
     
     for id in ids:
-        masses = [ (2000 + i) for i in range(18000) ]
-        intensities = np.loadtxt(os.path.join(input_dir, f"{id}.txt")).reshape(1, -1)
+        # masses = [ (2000 + i) for i in range(18000) ]
+        # intensities = np.loadtxt(os.path.join(input_dir, f"{id}.txt")).reshape(1, -1)
+        tmp_df = pd.read_csv(os.path.join(input_dir, f"{id}.txt"), 
+                             header=None, 
+                             names=["mass", "intensity"])
+        masses = tmp_df['mass'].values
+        intensities = tmp_df['intensity'].values
 
         # Bin intensities and return bin means
         binned_intensities = scipy.stats.binned_statistic(masses,
