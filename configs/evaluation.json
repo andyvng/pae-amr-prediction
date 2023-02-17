@@ -1,0 +1,10 @@
+{
+  "input_dir": "/home/hnguyen/vk56_scratch/tmp_folder/maldi_autoencoder/DRIAMS/ESKAPES",
+  "result_dir": "/home/hnguyen/vk56_scratch/tmp_folder/pae-amr-prediction/experiments/results/prediction/dyn_100",
+  "ast_label_path": "/home/hnguyen/vk56_scratch/tmp_folder/maldi_autoencoder/DRIAMS/eskapes_ast_lable.csv",
+  "id_path": "/home/hnguyen/vk56_scratch/tmp_folder/maldi_autoencoder/DRIAMS/codes/pae_train_ids.txt",
+  "extra_features_path": "",
+  "bins_path": "/home/hnguyen/vk56_scratch/tmp_folder/maldi_amr/Alfred/dynamic_binning_100_mass_features.pkl",
+  "normal_coeff": 0.0032642162573845,
+  "output_dir": "results/evaluation/DRIAMS"
+}
