@@ -28,14 +28,17 @@ def main():
 
 
     train_dataset = DatasetFromDir(config['working_dir'],
-                                   config['ast_path'],
-                                   config['train_path'])
+                                   config['label_path'],
+                                   config['train_path',
+                                   config['label_list']])
     val_dataset = DatasetFromDir(config['working_dir'],
-                                 config['ast_path'],
-                                 config['val_path'])
+                                 config['label_path'],
+                                 config['val_path'],
+                                 config['label_list'])
     test_dataset = DatasetFromDir(config['working_dir'],
-                                  config['ast_path'],
-                                  config['test_path'])
+                                  config['label_path'],
+                                  config['test_path'],
+                                  config['label_list'])
 
     print(f"Train:{len(train_dataset)}\tVal:{len(val_dataset)}\tTest:{len(test_dataset)}")
 
