@@ -52,6 +52,8 @@ def main():
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+    print(f"Training with {device}")
+
     if config['model'] == 'vanila':
         model = VanillaAutoEncoder(train_dataset.__getitem__(0)[0].shape[0]) \
                                .to(device)
@@ -88,15 +90,21 @@ def main():
             x = x.to(device)
             if config["model"] == "vanilla":
                 x_hat = model(x.float())
-                loss = F.binary_cross_entropy(x_hat, x.float(), reduction='sum').to(device)
+                loss = nn.BCELoss()(x_hat, x.float())
             elif config["model"] == "variational":
                 x_hat, mu, logvar, y_hat = model(x.float())
-                reconstruction_loss = F.binary_cross_entropy(x_hat, x.float(), reduction='sum').to(device)
-                kl_loss = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
-                #Update loss for multilabel classification
-                classification_loss = F.binary_cross_entropy(y_hat, y.float(), reduction='sum').to(device)
-                loss = reconstruction_loss + kl_loss + classification_loss
+                reconstruction_loss = nn.BCELoss()(x_hat, x.float())
+                kl_loss = torch.mean(-0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp()), dim=0)
 
+                #Update loss for classification
+                if config['classification_mode'] == "multilabel":
+                    classification_loss = nn.BCELoss()(y_hat, y.float())
+                elif config['classification_model'] == 'multiclass':
+                    classification_loss = nn.CrossEntropyLoss()(y_hat, y.float())
+                else:
+                    raise ValueError(f"Invalid classification task! {config['classification_model']}")
+
+                loss = reconstruction_loss + kl_loss + classification_loss
                 train_losses_per_type['reconstruction'].append(reconstruction_loss.item())
                 train_losses_per_type['kl'].append(kl_loss.item())
                 train_losses_per_type['classification'].append(classification_loss.item())
@@ -111,15 +119,24 @@ def main():
 
         with torch.no_grad():
             for batch_idx, (x, y) in enumerate(val_dataloader):
-                x = x.to(device)
+                x = x
                 if config["model"] == "vanilla":
                     x_hat = model(x.float())
-                    loss = F.binary_cross_entropy(x_hat, x.float(), reduction='sum').to(device)
+                    loss = nn.BCELoss()(x_hat, x.float())
                 elif config["model"] == "variational":
                     x_hat, mu, logvar, y_hat = model(x.float())
-                    reconstruction_loss = F.binary_cross_entropy(x_hat, x.float(), reduction='sum').to(device)
-                    kl_loss = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
-                    classification_loss = F.binary_cross_entropy(y_hat, y.float(), reduction='sum').to(device)
+
+                    reconstruction_loss = nn.BCELoss()(x_hat, x.float())
+                    kl_loss = torch.mean(-0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp()), dim=0)
+
+                    #Update loss for classification
+                    if config['classification_mode'] == "multilabel":
+                        classification_loss = nn.BCELoss()(y_hat, y.float())
+                    elif config['classification_model'] == 'multiclass':
+                        classification_loss = nn.CrossEntropyLoss()(y_hat, y.float())
+                    else:
+                        raise ValueError(f"Invalid classification task! {config['classification_model']}")
+
                     loss = reconstruction_loss + kl_loss + classification_loss
                     val_losses_per_type['reconstruction'].append(reconstruction_loss.item())
                     val_losses_per_type['kl'].append(kl_loss.item())

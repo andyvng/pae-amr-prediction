@@ -52,9 +52,9 @@ class VariationalEncoder(nn.Module):
         super(VariationalEncoder, self).__init__()
         self.input_shape = input_shape
         self.latent_shape = latent_shape
-        self.fc1 = nn.Linear(self.input_shape, 512)
-        self.fc2_mu = nn.Linear(512, self.latent_shape)
-        self.fc2_logvar = nn.Linear(512, self.latent_shape)
+        self.fc1 = nn.Linear(self.input_shape, 256)
+        self.fc2_mu = nn.Linear(256, self.latent_shape)
+        self.fc2_logvar = nn.Linear(256, self.latent_shape)
         self.relu = nn.ReLU()
 
     def _reparameterise(self, mu, logvar):
@@ -76,17 +76,17 @@ class VariationalDecoder(nn.Module):
         self.latent_shape = latent_shape
         self.relu = nn.ReLU()
         self.sigmoid = nn.Sigmoid()
-        self.fc3 = nn.Linear(self.latent_shape, 512)
-        self.fc4 = nn.Linear(512, self.input_shape)
+        self.fc3 = nn.Linear(self.latent_shape, 256)
+        self.fc4 = nn.Linear(256, self.input_shape)
 
     def forward(self, X):
         X = self.relu(self.fc3(X))
         X = self.sigmoid(self.fc4(X))
         return X
 
-class MultilabelClassifier(nn.Module):
+class Classifier(nn.Module):
     def __init__(self, input_shape, hidden_layers, output_shape):
-        super(MultilabelClassifier, self).__init__()
+        super(Classifier, self).__init__()
         self.input_shape = input_shape
         self.output_shape = output_shape
         self.hidden_layers = hidden_layers
@@ -102,8 +102,14 @@ class MultilabelClassifier(nn.Module):
         X = self.sigmoid(nn.Linear(self.hidden_layers[-1], self.output_shape)(X))
         return X
 
+
+
 class VariationalAutoEncoder(nn.Module):
-    def __init__(self, input_shape, latent_shape, hidden_layers, output_shape):
+    def __init__(self, 
+                 input_shape, 
+                 latent_shape, 
+                 hidden_layers, 
+                 output_shape):
         super(VariationalAutoEncoder, self).__init__()
         self.input_shape = input_shape
         self.latent_shape = latent_shape
@@ -113,13 +119,15 @@ class VariationalAutoEncoder(nn.Module):
         self.encoder = VariationalEncoder(self.input_shape, self.latent_shape)
         # Decoding part
         self.decoder = VariationalDecoder(self.input_shape, self.latent_shape)
-        # Multilabel classification part (Take latent shape as input)
-        self.multilabel_classifier = MultilabelClassifier(self.latent_shape,
-                                                          self.hidden_layers,
-                                                          self.output_shape)
+
+        # Classification part (Take latent shape as input)
+        self.classifier = Classifier(self.latent_shape,
+                                     self.hidden_layers,
+                                     self.output_shape)
+
    
     def forward(self, X):
         mu, logvar, X = self.encoder(X)
-        Y = self.multilabel_classifier(X)
+        Y = self.classifier(X)
         X = self.decoder(X)
         return X, mu, logvar, Y

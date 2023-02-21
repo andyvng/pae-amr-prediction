@@ -30,27 +30,24 @@ class DatasetFromDir(Dataset):
     '''
     def __init__(self, 
                  working_dir, 
-                 ast_label_path, 
-                 ids_path, 
-                 max_intensity=0.009055,
-                 antimicrobials=["piperacillin_tazobactam" ,
-                                 "meropenem",
-                                 "ciprofloxacin",
-                                 "tobramycin"]):
+                 label_path, 
+                 ids_path,
+                 label_list, 
+                 max_intensity=0.009055):
         self.working_dir = working_dir
-        self.ast_label_path = ast_label_path
+        self.label_path = label_path
         self.ids = pd.read_csv(ids_path, header=None).values
         self.max_intensity = max_intensity
-        self.antimicrobials = antimicrobials
+        self.label_list = label_list
 
     def __len__(self):
         return len(self.ids)
 
     def __getitem__(self, idx):
         self.code = self.ids.item(idx)
-        self.spectra = np.loadtxt(os.path.join(self.working_dir, f"{self.code}.txt")) / self.max_intensity
-        ast_label_df = pd.read_csv(self.ast_label_path, header=0)
-        self.labels = ast_label_df.copy().loc[ast_label_df['id']==self.code, self.antimicrobials].to_numpy().squeeze()
+        self.spectra = np.loadtxt(os.path.join(self.working_dir, f"{self.code}.txt")) / self.max_intensity # scale value to 0 and 1
+        label_df = pd.read_csv(self.label_path, header=0)
+        self.labels = label_df.copy().loc[label_df['id']==self.code, self.label_list].to_numpy().squeeze()
         return torch.tensor(self.spectra), torch.tensor(self.labels)
 
 class EarlyStopper:
