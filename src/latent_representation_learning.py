@@ -102,7 +102,7 @@ def main():
                 #Update loss for classification
                 if config['classification_mode'] == "multilabel":
                     classification_loss = nn.BCELoss()(y_hat, y.float())
-                elif config['classification_model'] == 'multiclass':
+                elif config['classification_mode'] == 'multiclass':
                     classification_loss = nn.CrossEntropyLoss()(y_hat, y.float())
                 else:
                     raise ValueError(f"Invalid classification task! {config['classification_model']}")
@@ -135,7 +135,7 @@ def main():
                     #Update loss for classification
                     if config['classification_mode'] == "multilabel":
                         classification_loss = nn.BCELoss()(y_hat, y.float())
-                    elif config['classification_model'] == 'multiclass':
+                    elif config['classification_mode'] == 'multiclass':
                         classification_loss = nn.CrossEntropyLoss()(y_hat, y.float())
                     else:
                         raise ValueError(f"Invalid classification task! {config['classification_model']}")
