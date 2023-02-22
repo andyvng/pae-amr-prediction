@@ -29,8 +29,8 @@ def main():
 
     train_dataset = DatasetFromDir(config['working_dir'],
                                    config['label_path'],
-                                   config['train_path',
-                                   config['label_list']])
+                                   config['train_path'],
+                                   config['label_list'])
     val_dataset = DatasetFromDir(config['working_dir'],
                                  config['label_path'],
                                  config['val_path'],
