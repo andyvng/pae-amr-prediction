@@ -45,18 +45,20 @@ class DatasetFromDir(Dataset):
 
     def __getitem__(self, idx, bins=None):
         self.code = self.ids.item(idx)
-		tmp_df = pd.read_csv(os.path.join(self.working_dir, f"{self.code}.txt"), header=None, names=["mass", "intensity"])
-		masses = tmp_df["mass"].values
-		intensities = tmp_df["intensity"].values
-
-		if bins is None:
-			bins = [i + 2000 for i in range(18001)]
-		binned_intensities = scipy.stats.binned_statistic(masses,
+        tmp_df = pd.read_csv(os.path.join(self.working_dir, f"{self.code}.txt"), header=None, names=["mass", "intensity"])
+        masses = tmp_df["mass"].values
+        intensities = tmp_df["intensity"].values
+        
+        if bins is None:
+            bins = [i + 2000 for i in range(18001)]
+            
+        binned_intensities = scipy.stats.binned_statistic(masses,
 														  intensities,
 														  statistic="max",
 														  bins=bins).statistic
-        np.nan_to_num(binned_intensities, copy=False, nan=0) 
-		self.spectra = binned_intensities.squeeze() / self.max_intensity
+        
+        np.nan_to_num(binned_intensities, copy=False, nan=0)
+        self.spectra = binned_intensities.squeeze() / self.max_intensity
         label_df = pd.read_csv(self.label_path, header=0)
         self.labels = label_df.copy().loc[label_df['id']==self.code, self.label_list].to_numpy().squeeze()
         return torch.tensor(self.spectra), torch.tensor(self.labels)
