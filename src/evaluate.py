@@ -69,7 +69,12 @@ def main():
                                                     ids, 
                                                     bins)
     else:
-        X = pd.read_csv(config['input_dir'])
+        if config['input_dir'].endswith("csv"):
+            X = pd.read_csv(config['input_dir'])
+        elif config['input_dir'].endswith("feather"):
+            X = pd.read_feather(config['input_dir'])
+        else:
+            raise TypeError(f"Unsupported extension for input file: {config['input_dir'].split('.')[-1]}")
         features=list(X.columns)
         features.remove('id')
         
