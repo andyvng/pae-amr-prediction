@@ -131,5 +131,9 @@ dmypy.json
 # Experiment folder
 experiments/
 
+# Output folder
+analysis/outputs
+analysis/plots
+
 # Inhouse data preprocess
 src/preprocess/gather_inhouse_data.ipynb
