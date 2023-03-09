@@ -85,20 +85,20 @@ def main():
         features=list(X.columns)
         features.remove('id')
         
-        X_train = X.merge(pd.DataFrame({'id': train_ids}),
+        X_train = pd.DataFrame({'id': train_ids}).merge(X,
                           how='inner',
                           on='id')\
                    .drop(labels=['id'], axis=1)\
                    .to_numpy()
-        y_train = ast_df.merge(pd.DataFrame({'id': train_ids}),
+        y_train = pd.DataFrame({'id': train_ids}).merge(ast_df,
                                how='inner',
                                on='id')[antimicrobial].values
-        X_test = X.merge(pd.DataFrame({'id': test_ids}),
+        X_test = pd.DataFrame({'id': test_ids}).merge(X,
                           how='inner',
                           on='id')\
                    .drop(labels=['id'], axis=1)\
                    .to_numpy()
-        y_test = ast_df.merge(pd.DataFrame({'id': test_ids}),
+        y_test = pd.DataFrame({'id': test_ids}).merge(ast_df,
                                how='inner',
                                on='id')[antimicrobial].values
 
@@ -107,7 +107,7 @@ def main():
     X_train = X_train / norm_coeff
     X_test = X_test / norm_coeff
 
-    # Adding cluster information
+    # Adding extra features
     if config['extra_features_path']:
         extra_feature_df = pd.read_csv(config['extra_features_path']) # Don't forget one-hot encoding and scaling!
         
@@ -115,8 +115,8 @@ def main():
         extra_features.remove('id')
         features = np.concatenate((features, extra_features))
 
-        train_extra_feature_df = extra_feature_df.merge(pd.DataFrame({'id': train_ids}), on='id', how='inner').drop(labels=['id'], axis=1).to_numpy()
-        test_extra_feature_df = extra_feature_df.merge(pd.DataFrame({'id': test_ids}), on='id', how='inner').drop(labels=['id'], axis=1).to_numpy()
+        train_extra_feature_df = pd.DataFrame({'id': train_ids}).merge(extra_feature_df, on='id', how='inner').drop(labels=['id'], axis=1).to_numpy()
+        test_extra_feature_df = pd.DataFrame({'id': test_ids}).merge(extra_feature_df, on='id', how='inner').drop(labels=['id'], axis=1).to_numpy()
 
         X_train = np.concatenate([X_train, train_extra_feature_df], axis=1)
         X_test  = np.concatenate([X_test, test_extra_feature_df], axis=1)
