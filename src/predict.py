@@ -152,6 +152,8 @@ def main():
 
     print(f"X_train: {X_train.shape}\ty_train: {y_train.shape}")
     print(f"X_test: {X_test.shape}\ty_test: {y_test.shape}")
+    np.savetxt("X_train.csv", X_train, delimiter=",")
+    np.savetxt("X_test.csv", X_train, delimiter=",")
 
     clf = tune_model(X_train,
                         y_train,
