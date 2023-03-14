@@ -120,6 +120,8 @@ def main():
 
         X_train = np.concatenate([X_train, train_extra_feature_df], axis=1)
         X_test  = np.concatenate([X_test, test_extra_feature_df], axis=1)
+
+    
         
     
     # Oversampling with SMOTE
@@ -148,6 +150,8 @@ def main():
         else:
             X_train, y_train = X_res, y_res
 
+    print(f"X_train: {X_train.shape}\ty_train: {y_train.shape}")
+    print(f"X_test: {X_test.shape}\ty_test: {y_test.shape}")
 
     clf = tune_model(X_train,
                         y_train,
