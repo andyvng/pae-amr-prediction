@@ -119,6 +119,8 @@ def load_and_preprocess_spectra(input_dir,
         else:
             X = binned_intensities.reshape(1, -1)
 
+    np.nan_to_num(X, copy=False, nan=0)
+
     # getting Y label
     tmp_df = pd.DataFrame({'id': ids})
     y = tmp_df.merge(ast_df, how='left', on='id')[antimicrobial].values
